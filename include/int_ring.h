@@ -1,9 +1,12 @@
+#ifndef INT_RING_H
+#define INT_RING_H
+
 #include <stdbool.h>
 #include <stddef.h>
 
 #define INT_RING_CAPACITY 8U
 
-typedef struc {
+typedef struct {
     int data[INT_RING_CAPACITY]
     size_t head;
     size_t tail;
@@ -18,3 +21,4 @@ bool int_ring_is_empty(const IntRing* ring);
 bool int_ring_is_full(const IntRing* ring);
 size_t int_ring_size(const IntRing* ring);
 
+#endif
