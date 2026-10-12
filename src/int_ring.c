@@ -1,7 +1,9 @@
 #include "int_ring.h"
 
 void int_ring_init(IntRing* ring){
-    (void)ring;
+    ring->head = 0;
+    ring->tail = 0;
+    ring->size = 0;
 }
 
 bool int_ring_push(IntRing* ring, int value){
@@ -26,19 +28,13 @@ bool int_ring_peek(const IntRing* ring, int* value){
 }
 
 bool int_ring_is_empty(const IntRing* ring){
-    (void)ring;
-
-    return false;
+    return int_ring_size(ring) == 0;
 }
 
 bool int_ring_is_full(const IntRing* ring){
-    (void)ring;
-
-    return false;
+    return int_ring_size(ring) == INT_RING_CAPACITY;
 }
 
 size_t int_ring_size(const IntRing* ring){
-    (void)ring;
-
-    return 0;
+    return ring->size;
 }

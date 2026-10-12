@@ -8,6 +8,21 @@ void tearDown(void){}
 // Test 1: A newly initialized buffer
 // (Check head, tail, size, empty, full)
 
+void test_newly_initialized_buffer(void){
+    IntRing ring;
+    int_ring_init(&ring);
+
+    TEST_ASSERT_EQUAL_UINT(0, ring.head);
+    TEST_ASSERT_EQUAL_UINT(0, ring.tail);
+    TEST_ASSERT_EQUAL_UINT(0, ring.size);
+
+    TEST_ASSERT_TRUE(int_ring_is_empty(&ring));
+    TEST_ASSERT_FALSE(int_ring_is_full(&ring));
+
+    TEST_ASSERT_EQUAL_UINT(0, int_ring_size(&ring));
+    
+}
+
 
 // Test 2: One push and one pop
 // (Check value returned and buffer state changes)
@@ -33,6 +48,8 @@ void tearDown(void){}
 
 int main(void){
     UNITY_BEGIN();
+
+    RUN_TEST(test_newly_initialized_buffer);
 
     return UNITY_END();
 }
