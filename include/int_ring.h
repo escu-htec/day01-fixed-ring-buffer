@@ -7,7 +7,7 @@
 #define INT_RING_CAPACITY 8U
 
 typedef struct {
-    int data[INT_RING_CAPACITY]
+    int data[INT_RING_CAPACITY];
     size_t head;
     size_t tail;
     size_t size;
