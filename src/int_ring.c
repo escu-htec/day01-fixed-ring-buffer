@@ -29,10 +29,12 @@ bool int_ring_pop(IntRing* ring, int* value){
 }
 
 bool int_ring_peek(const IntRing* ring, int* value){
-    (void)ring;
-    (void)value;
+    if (int_ring_is_empty(ring)) {
+        return false;
+    }
 
-    return false;
+    *value = ring->data[ring->head];
+    return true;
 }
 
 bool int_ring_is_empty(const IntRing* ring){

@@ -132,6 +132,21 @@ void test_push_rejected_when_buffer_is_full(void){
 // Test 6: Rejection of a pop and peek when empty
 // (Check pop and peek return false and output pointer is not modified)
 
+void test_pop_and_peek_rejected_when_empty(void){
+    IntRing ring;
+    int value = 123;
+    int_ring_init(&ring);
+
+    TEST_ASSERT_FALSE(int_ring_pop(&ring, &value));
+    TEST_ASSERT_EQUAL_INT(123, value);
+
+    TEST_ASSERT_FALSE(int_ring_peek(&ring, &value));
+    TEST_ASSERT_EQUAL_INT(123, value);
+
+    TEST_ASSERT_TRUE(int_ring_is_empty(&ring));
+    TEST_ASSERT_EQUAL_UINT(0, int_ring_size(&ring));
+}
+
 // Test 7: At least two complete wrap-around cycles
 // (Verify head and tail wrap around index boundary correctly multiple times)
 
@@ -147,6 +162,7 @@ int main(void){
     RUN_TEST(test_fifo_ordering_of_several_values);
     RUN_TEST(test_filling_buffer_exactly_to_capacity);
     RUN_TEST(test_push_rejected_when_buffer_is_full);
+    RUN_TEST(test_pop_and_peek_rejected_when_empty);
 
     return UNITY_END();
 }
