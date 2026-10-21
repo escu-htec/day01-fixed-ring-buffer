@@ -7,17 +7,25 @@ void int_ring_init(IntRing* ring){
 }
 
 bool int_ring_push(IntRing* ring, int value){
-    (void)ring;
-    (void)value;
+    if (int_ring_is_full(ring)) {
+        return false;
+    }
 
-    return false;
+    ring->data[ring->tail] = value;
+    ring->tail = (ring->tail + 1) % INT_RING_CAPACITY;
+    ring->size++;
+    return true;
 }
 
 bool int_ring_pop(IntRing* ring, int* value){
-    (void)ring;
-    (void)value;
+    if (int_ring_is_empty(ring)) {
+        return false;
+    }
 
-    return false;
+    *value = ring->data[ring->head];
+    ring->head = (ring->head + 1) % INT_RING_CAPACITY;
+    ring->size--;
+    return true;
 }
 
 bool int_ring_peek(const IntRing* ring, int* value){
