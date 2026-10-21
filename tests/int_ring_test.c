@@ -51,18 +51,22 @@ void test_one_push_one_pop(void){
 
 void test_fifo_ordering_of_several_values(void){
     IntRing ring;
-    const int values[] = {21, 34, 55, 89};
     int value = 0;
     int_ring_init(&ring);
 
-    for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
-        TEST_ASSERT_TRUE(int_ring_push(&ring, values[i]));
-    }
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 21));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 34));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 55));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 89));
 
-    for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
-        TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
-        TEST_ASSERT_EQUAL_INT(values[i], value);
-    }
+    TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
+    TEST_ASSERT_EQUAL_INT(21, value);
+    TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
+    TEST_ASSERT_EQUAL_INT(34, value);
+    TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
+    TEST_ASSERT_EQUAL_INT(55, value);
+    TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
+    TEST_ASSERT_EQUAL_INT(89, value);
 
     TEST_ASSERT_TRUE(int_ring_is_empty(&ring));
 }
@@ -74,11 +78,16 @@ void test_filling_buffer_exactly_to_capacity(void){
     IntRing ring;
     int_ring_init(&ring);
 
-    for (size_t i = 0; i < INT_RING_CAPACITY; i++) {
-        TEST_ASSERT_TRUE(int_ring_push(&ring, (int)i));
-    }
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 0));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 1));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 2));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 3));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 4));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 5));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 6));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 7));
 
-    TEST_ASSERT_EQUAL_UINT(INT_RING_CAPACITY, int_ring_size(&ring));
+    TEST_ASSERT_EQUAL_UINT(8, int_ring_size(&ring));
     TEST_ASSERT_TRUE(int_ring_is_full(&ring));
     TEST_ASSERT_FALSE(int_ring_is_empty(&ring));
     TEST_ASSERT_EQUAL_UINT(0, ring.head);
@@ -90,13 +99,16 @@ void test_filling_buffer_exactly_to_capacity(void){
 
 void test_push_rejected_when_buffer_is_full(void){
     IntRing ring;
-    int data_before[INT_RING_CAPACITY];
     int_ring_init(&ring);
 
-    for (size_t i = 0; i < INT_RING_CAPACITY; i++) {
-        TEST_ASSERT_TRUE(int_ring_push(&ring, (int)i + 10));
-        data_before[i] = ring.data[i];
-    }
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 10));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 11));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 12));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 13));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 14));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 15));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 16));
+    TEST_ASSERT_TRUE(int_ring_push(&ring, 17));
 
     size_t head_before = ring.head;
     size_t tail_before = ring.tail;
@@ -107,9 +119,14 @@ void test_push_rejected_when_buffer_is_full(void){
     TEST_ASSERT_EQUAL_UINT(head_before, ring.head);
     TEST_ASSERT_EQUAL_UINT(tail_before, ring.tail);
     TEST_ASSERT_EQUAL_UINT(size_before, ring.size);
-    for (size_t i = 0; i < INT_RING_CAPACITY; i++) {
-        TEST_ASSERT_EQUAL_INT(data_before[i], ring.data[i]);
-    }
+    TEST_ASSERT_EQUAL_INT(10, ring.data[0]);
+    TEST_ASSERT_EQUAL_INT(11, ring.data[1]);
+    TEST_ASSERT_EQUAL_INT(12, ring.data[2]);
+    TEST_ASSERT_EQUAL_INT(13, ring.data[3]);
+    TEST_ASSERT_EQUAL_INT(14, ring.data[4]);
+    TEST_ASSERT_EQUAL_INT(15, ring.data[5]);
+    TEST_ASSERT_EQUAL_INT(16, ring.data[6]);
+    TEST_ASSERT_EQUAL_INT(17, ring.data[7]);
 }
 
 // Test 6: Rejection of a pop and peek when empty
