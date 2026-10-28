@@ -154,20 +154,20 @@ void test_at_least_two_wrap_around_cycles(void) {
     int value = 0;
     int_ring_init(&ring);
 
-    for (size_t i = 0; i < 2U * INT_RING_CAPACITY; i++) {
-        TEST_ASSERT_TRUE(int_ring_push(&ring, (int)i));
+    for (size_t iteration = 0; iteration < 2U * INT_RING_CAPACITY; iteration++) {
+        TEST_ASSERT_TRUE(int_ring_push(&ring, (int)iteration));
 
-        TEST_ASSERT_EQUAL_UINT(i % INT_RING_CAPACITY, ring.head);
+        TEST_ASSERT_EQUAL_UINT(iteration % INT_RING_CAPACITY, ring.head);
         TEST_ASSERT_EQUAL_UINT(
-            (i + 1U) % INT_RING_CAPACITY,
+            (iteration + 1U) % INT_RING_CAPACITY,
             ring.tail
         );
 
         TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
-        TEST_ASSERT_EQUAL_INT((int)i, value);
+        TEST_ASSERT_EQUAL_INT((int)iteration, value);
 
         TEST_ASSERT_EQUAL_UINT(
-            (i + 1U) % INT_RING_CAPACITY,
+            (iteration + 1U) % INT_RING_CAPACITY,
             ring.head
         );
         TEST_ASSERT_EQUAL_UINT(ring.head, ring.tail);
@@ -181,6 +181,32 @@ void test_at_least_two_wrap_around_cycles(void) {
 
 // Test 8: Reuse after the buffer has become empty again
 // (Ensure the buffer remains fully functional across multiple empty/refill cycles)
+void test_reuse_after_buffer_becomes_empty(void){
+    IntRing ring;
+    int value = 0;
+    int_ring_init(&ring);
+
+    for (size_t cycle = 0; cycle < 3U; cycle++) {
+        TEST_ASSERT_TRUE(int_ring_is_empty(&ring));
+
+        for (size_t item_index = 0; item_index < INT_RING_CAPACITY; item_index++) {
+            int expected = (int)(cycle * INT_RING_CAPACITY + item_index);
+            TEST_ASSERT_TRUE(int_ring_push(&ring, expected));
+        }
+
+        TEST_ASSERT_TRUE(int_ring_is_full(&ring));
+        TEST_ASSERT_EQUAL_UINT(INT_RING_CAPACITY, int_ring_size(&ring));
+
+        for (size_t item_index = 0; item_index < INT_RING_CAPACITY; item_index++) {
+            int expected = (int)(cycle * INT_RING_CAPACITY + item_index);
+            TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
+            TEST_ASSERT_EQUAL_INT(expected, value);
+        }
+
+        TEST_ASSERT_TRUE(int_ring_is_empty(&ring));
+        TEST_ASSERT_EQUAL_UINT(0, int_ring_size(&ring));
+    }
+}
 
 
 int main(void){
@@ -193,6 +219,7 @@ int main(void){
     RUN_TEST(test_push_rejected_when_buffer_is_full);
     RUN_TEST(test_pop_and_peek_rejected_when_empty);
     RUN_TEST(test_at_least_two_wrap_around_cycles);
+    RUN_TEST(test_reuse_after_buffer_becomes_empty);
 
     return UNITY_END();
 }
