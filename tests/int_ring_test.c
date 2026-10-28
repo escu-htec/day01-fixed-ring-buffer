@@ -149,6 +149,35 @@ void test_pop_and_peek_rejected_when_empty(void){
 
 // Test 7: At least two complete wrap-around cycles
 // (Verify head and tail wrap around index boundary correctly multiple times)
+void test_at_least_two_wrap_around_cycles(void) {
+    IntRing ring;
+    int value = 0;
+    int_ring_init(&ring);
+
+    for (size_t i = 0; i < 2U * INT_RING_CAPACITY; i++) {
+        TEST_ASSERT_TRUE(int_ring_push(&ring, (int)i));
+
+        TEST_ASSERT_EQUAL_UINT(i % INT_RING_CAPACITY, ring.head);
+        TEST_ASSERT_EQUAL_UINT(
+            (i + 1U) % INT_RING_CAPACITY,
+            ring.tail
+        );
+
+        TEST_ASSERT_TRUE(int_ring_pop(&ring, &value));
+        TEST_ASSERT_EQUAL_INT((int)i, value);
+
+        TEST_ASSERT_EQUAL_UINT(
+            (i + 1U) % INT_RING_CAPACITY,
+            ring.head
+        );
+        TEST_ASSERT_EQUAL_UINT(ring.head, ring.tail);
+        TEST_ASSERT_EQUAL_UINT(0, int_ring_size(&ring));
+    }
+
+    TEST_ASSERT_TRUE(int_ring_is_empty(&ring));
+    TEST_ASSERT_EQUAL_UINT(0, ring.head);
+    TEST_ASSERT_EQUAL_UINT(0, ring.tail);
+}
 
 // Test 8: Reuse after the buffer has become empty again
 // (Ensure the buffer remains fully functional across multiple empty/refill cycles)
@@ -163,6 +192,7 @@ int main(void){
     RUN_TEST(test_filling_buffer_exactly_to_capacity);
     RUN_TEST(test_push_rejected_when_buffer_is_full);
     RUN_TEST(test_pop_and_peek_rejected_when_empty);
+    RUN_TEST(test_at_least_two_wrap_around_cycles);
 
     return UNITY_END();
 }
